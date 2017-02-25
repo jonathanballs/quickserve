@@ -1,0 +1,6 @@
+[package]
+name = "quickserve"
+version = "0.1.0"
+authors = ["Jonathan Balls <j.balls@btopenworld.com>"]
+
+[dependencies]
