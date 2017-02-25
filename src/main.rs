@@ -84,9 +84,19 @@ fn runSSHServer() {
     });
 }
 fn portReceive(req: &mut Request) -> IronResult<Response> {
-    let ref slug = req.extensions.get::<Router>().unwrap().find("slug").unwrap_or("/");
-    let ref location = req.extensions.get::<Router>().unwrap().find("location").unwrap_or("/");
-    let msg = "Slug= ".to_string() + &slug + " location= " + &location;
+    let url = req.url.path();
+    let ref slug = url[0]; 
+    let mut location = std::string::String::new();
+    let mut cur = url[0];
+    for i in 1..url.len()
+    {
+        cur = url[i];
+        println!("{}",i);
+        location.push_str("/");
+        location.push_str(&cur);
+    }
+    let msg = "Slug= ".to_string() + slug + " location= "; //+ location;
+    println!("Req is = {:?}", location);
     Ok(Response::with((status::Ok, msg)))
 }
 
@@ -94,11 +104,12 @@ fn start_web()
 {
     //Creating the router
     let mut router = Router::new();
-    router.get(":slug/:location",portReceive,  "hello");
+    // router.get(":slug/:location",portReceive,  "hello");
+    router.get("*",portReceive,  "hello");
 
     let mut mount = Mount::new();
     mount.mount("/s/", router)
-         .mount("/",Static::new(Path::new("src/static")));
+        .mount("/",Static::new(Path::new("src/static")));
 
     //Creating the server
     Iron::new(mount).http("localhost:8000").unwrap();
