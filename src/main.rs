@@ -1,31 +1,21 @@
-use std::net::{TcpListener, TcpStream};
+extern crate iron;
+#[allow(unused_imports)]
+use iron::prelude::*;
+#[allow(unused_imports)]
+use iron::status;
 
 fn main() 
 {
     #![allow(non_snake_case)]
-    println!("Hello, world!");
+    println!("Starting server");
     start_web();
 }
 
 fn start_web() 
 {
-    let listener = TcpListener::bind("127.0.0.1:2222").unwrap();
-    //accept connections and processing them
-    for stream in listener.incoming()
-    {
-        match stream
-        {
-            Ok(stream) => handle_client(stream),
-            Err(_) => println!("Connection failed")
-        }
-    }
-
-}
-fn handle_client(stream:TcpStream) 
-{
-    println!("Connection handled");
-    // stream.write("Hello");
-    println!("{:?}",stream);
+    Iron::new(|_:&mut Request|
+              {
+                  Ok(Response::with((status::Ok, "Hello!\r\n")))
+              }).http("localhost:8000").unwrap();
     
-    //
 }
