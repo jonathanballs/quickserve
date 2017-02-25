@@ -1,0 +1,46 @@
+*
+{
+    font-family:Helvetica;
+    color:#333;
+}
+body{margin:0;}
+#banner
+{
+    padding:39vh 0;
+    text-align:center;
+    background-image:url('img/bg2.jpg');
+    background-attachment: fixed;
+    background-size:cover;
+    background-repeat:no-repeat;
+}
+
+#banner h1
+{
+    color:white;
+    font-size:50pt;
+    text-shadow: 0px 0px 15px black; 
+}
+#banner h3
+{
+    color:white;
+    text-shadow: 0px 0px 15px black; 
+}
+
+#terminal
+{
+    width:600px;
+    margin: 0px auto;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+#terminal p
+{
+    font-family:Courier new, monospace;
+    padding-left:20px;
+    text-align:left;
+    background-color:#333;
+    color:white;
+    padding-top:20px;
+    padding-bottom:20px;
+}
