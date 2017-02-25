@@ -5,6 +5,7 @@ extern crate tokio_core;
 extern crate env_logger;
 extern crate iron;
 extern crate rustc_serialize;
+extern crate params;
 use rustc_serialize::hex::{ToHex};
 extern crate mount;
 extern crate staticfile;
@@ -82,23 +83,26 @@ fn runSSHServer() {
         thrussh::server::run(config, "0.0.0.0:2222", sh);
     });
 }
-fn respond(req: &mut Request) -> IronResult<Response> {
-    println!("Running send_hello handler, URL path: {}", req.url.path().join("/"));
-    Ok(Response::with((status::Ok, "This request was routed!")))
+fn portReceive(req: &mut Request) -> IronResult<Response> {
+    let ref slug = req.extensions.get::<Router>().unwrap().find("slug").unwrap_or("/");
+    let ref location = req.extensions.get::<Router>().unwrap().find("location").unwrap_or("/");
+    let msg = "Slug= ".to_string() + &slug + " location= " + &location;
+    Ok(Response::with((status::Ok, msg)))
 }
 
 fn start_web() 
 {
     //Creating the router
     let mut router = Router::new();
-    router.get("/",respond,  "hello");
+    router.get(":slug/:location",portReceive,  "hello");
 
     let mut mount = Mount::new();
-    mount .mount("/",Static::new(Path::new("src/static")));
-    
+    mount.mount("/s/", router)
+         .mount("/",Static::new(Path::new("src/static")));
+
     //Creating the server
     Iron::new(mount).http("localhost:8000").unwrap();
-    
+
 }
 
 fn main() {
