@@ -1,4 +1,4 @@
-//use std::net::{TcpListener, TcpStream};
+//Importing damn crates
 extern crate thrussh;
 extern crate futures;
 extern crate tokio_core;
@@ -6,15 +6,26 @@ extern crate env_logger;
 extern crate iron;
 extern crate rustc_serialize;
 use rustc_serialize::hex::{ToHex};
+extern crate mount;
+extern crate staticfile;
+extern crate router;
+
+use std::collections::HashMap;
 use std::sync::Arc;
-use thrussh::*;
 use std::io;
+use std::path::Path;
+
+use thrussh::*;
 use thrussh::server::Response as sshResponse;
 
-#[allow(unused_imports)]
 use iron::prelude::*;
-#[allow(unused_imports)]
 use iron::status;
+use iron::Handler;
+
+use mount::Mount;
+use router::Router;
+use staticfile::Static;
+
 
 #[derive(Clone)]
 struct H{}
@@ -71,13 +82,23 @@ fn runSSHServer() {
         thrussh::server::run(config, "0.0.0.0:2222", sh);
     });
 }
+fn respond(req: &mut Request) -> IronResult<Response> {
+    println!("Running send_hello handler, URL path: {}", req.url.path().join("/"));
+    Ok(Response::with((status::Ok, "This request was routed!")))
+}
 
 fn start_web() 
 {
-    Iron::new(|_:&mut Request|
-              {
-                  Ok(Response::with((status::Ok, "Hello!\r\n")))
-              }).http("localhost:8000").unwrap();
+    //Creating the router
+    let mut router = Router::new();
+    router.get("/",respond,  "hello");
+
+    let mut mount = Mount::new();
+    mount .mount("/",Static::new(Path::new("src/static")));
+    
+    //Creating the server
+    Iron::new(mount).http("localhost:8000").unwrap();
+    
 }
 
 fn main() {

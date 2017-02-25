@@ -6,9 +6,9 @@
 body{margin:0;}
 #banner
 {
-    padding:39vh 0;
+    padding:30vh 0;
     text-align:center;
-    background-image:url('img/bg2.jpg');
+    background-image:url('../img/bg2.jpg');
     background-attachment: fixed;
     background-size:cover;
     background-repeat:no-repeat;
@@ -43,4 +43,22 @@ body{margin:0;}
     color:white;
     padding-top:20px;
     padding-bottom:20px;
+}
+#features
+{
+    text-align:center;
+    height:50vh; 
+    max-width:1000px;
+    width90%;
+    margin:0 auto;
+}
+.third
+{
+    float:left;
+    width: 33%;
+    margin:auto;
+}
+.third .icon
+{
+    font-size:100pt;
 }
