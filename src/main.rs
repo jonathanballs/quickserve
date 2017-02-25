@@ -24,5 +24,8 @@ fn start_web()
 fn handle_client(stream:TcpStream) 
 {
     println!("Connection handled");
+    // stream.write("Hello");
+    println!("{:?}",stream);
+    
     //
 }
