@@ -3,10 +3,16 @@ extern crate thrussh;
 extern crate futures;
 extern crate tokio_core;
 extern crate env_logger;
+extern crate iron;
 use std::sync::Arc;
 use thrussh::*;
 use std::io;
-use thrussh::server::Response;
+use thrussh::server::Response as sshResponse;
+
+#[allow(unused_imports)]
+use iron::prelude::*;
+#[allow(unused_imports)]
+use iron::status;
 
 #[derive(Clone)]
 struct H{}
@@ -21,7 +27,7 @@ impl server::Handler for H {
         //println!("Testing auth...");
         //futures::finished((self, server::Auth::Accept))
     //}
-    fn auth_keyboard_interactive(self,user:&str,submethods:&str, response:Option<Response>)-> Self::FutureAuth{
+    fn auth_keyboard_interactive(self,user:&str,submethods:&str, response:Option<sshResponse>)-> Self::FutureAuth{
         println!("{:?}", response);
         futures::finished((self, server::Auth::Accept))
     }
@@ -67,9 +73,18 @@ fn runSSHServer() {
     });
 }
 
+fn start_web() 
+{
+    Iron::new(|_:&mut Request|
+              {
+                  Ok(Response::with((status::Ok, "Hello!\r\n")))
+              }).http("localhost:8000").unwrap();
+}
+
 fn main() {
     //startWeb();
     runSSHServer();
+    start_web();
     let mut x = String::new();
     io::stdin().read_line(&mut x);
 }
