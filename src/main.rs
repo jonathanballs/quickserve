@@ -11,7 +11,8 @@ extern crate mount;
 extern crate staticfile;
 extern crate router;
 
-use std::collections::HashMap;
+use std::time::Duration;
+use std::thread;
 use std::sync::Arc;
 use std::path::Path;
 use std::option::Option;
@@ -21,12 +22,10 @@ use thrussh::server::Response as sshResponse;
 
 use iron::prelude::*;
 use iron::status;
-use iron::Handler;
 
 use mount::Mount;
 use router::Router;
 use staticfile::Static;
-
 
 #[derive(Clone)]
 struct H{}
@@ -48,28 +47,22 @@ impl server::Handler for H {
         futures::finished((self, session))
     }
 
-    fn extended_data(self, channel: ChannelId, code: u32, data: &[u8], session: server::Session) -> Self::FutureUnit {
-        println!("data on channel {:?}.{}: {:?}", channel, code, data.to_hex());
-        futures::finished((self, session))
-    }
-
-    // When the SSH client requests a TCP/IP forward this method is called
+    // The SSH client requests a port forwarding.
+    // QuickServe then creates a channel in order to communicate
     fn tcpip_forward(self, address: &str, port: u32, mut session: server::Session) -> Self::FutureBool
     {
-        println!("Client {} requested a port forward to {}", address, port);
-        let ch_id = session.channel_open_forwarded_tcpip(address, port, "localhost", port).unwrap();
-        println!("New TCP/IP forwarding session on channel {:?}", ch_id);
-        // Send a get request over the new channel
+        println!("Client requested a port forward to {}:{}", address, port);
         session.request_success();
-        session.data(ch_id, None, "GET / HTTP/1.1\r\n".as_bytes());
-        
+        //let ch_id = session.channel_open_forwarded_tcpip("localhost", 9000, "localhost", 8500).unwrap();
+        //session.channel_open_forwarded_tcpip("localhost", 9000, "localhost", 8500);
         // Return true that the tcpip forward request is accepted
         futures::finished((self, session, true))
     }
 
-    fn channel_open_session(self, channel: ChannelId, session: server::Session) -> Self::FutureUnit
+    fn channel_open_session(self, channel: ChannelId, mut session: server::Session) -> Self::FutureUnit
     {
         println!("New session {:?}", channel);
+        session.data(channel, None, "Quickserve: Head to http://quickserve.io/AB3VLY/ to view your website\r\n".as_bytes());
         futures::finished((self, session))
     }
 
@@ -78,9 +71,11 @@ impl server::Handler for H {
 		 originator_address: &str, originator_port: u32,
 		 session: server::Session) -> Self::FutureUnit
     {
+        println!("Hello, world!");
         println!("Channel open direct tcpip: {} {} {} {}",host_to_connect,
                  port_to_connect,originator_address,originator_port);
 
+        //session.data(ch_id, None, "GET / HTTP/1.1\r\n".as_bytes());
         futures::finished((self, session))
     }
 }
@@ -145,7 +140,7 @@ fn main() {
         | | | |_   _ _  ___| | _____  ___ _ ____   _____ \n\
         | | | | | | | |/ __| |/ / __|/ _ \\ '__\\ \\ / / _ \\\n\
         \\ \\/' / |_| | | (__|   <\\__ \\  __/ |   \\ V /  __/\n \
-         \\_/\\_\\\\__,_|_|\\___|_|\\_\\___/\\___|_|    \\_/ \\___|");
+         \\_/\\_\\\\__,_|_|\\___|_|\\_\\___/\\___|_|    \\_/ \\___|\n");
 
     run_ssh_server();
     start_web();
