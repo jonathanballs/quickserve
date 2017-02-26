@@ -1,0 +1,1 @@
+{"rustc":17615268967769245645,"target":10339828221529422987,"profile":11625325535095225723,"local":{"variant":"Precalculated","fields":["0.3.0"]},"features":"None","deps":[["iron v0.5.1",9440528341276563643],["sequence_trie v0.2.1",1940689160631132844]],"rustflags":[]}
