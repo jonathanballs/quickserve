@@ -5,6 +5,17 @@ var inspect = require('util').inspect;
 var ssh2 = require('ssh2');
 var utils = ssh2.utils;
 
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    for( var i=0; i < 7; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
 function main()
 {
     new ssh2.Server({
@@ -21,6 +32,8 @@ function main()
 		session.on('shell', function(accept, reject, info) {
 		    console.log('Client is entering the shell');
 		    var stream = accept();
+                    var id = makeid();
+                    stream.write("QuickServe: Your website can be found at http://quickserve.io/" + id);
 		});
 	    });
 
@@ -36,6 +49,7 @@ function main()
 				45678, // Would normally come from a socket
 				function(err, stream) {
                                     stream.write("GET / HTTP/1.1");
+                                    stream.on('data', function(data) {console.log(data)});
 				    if (err)
 					return;
 				    stream.end('hello world\n');
