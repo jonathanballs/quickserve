@@ -5,6 +5,8 @@ var inspect = require('util').inspect;
 var ssh2 = require('ssh2');
 var utils = ssh2.utils;
 
+function main()
+{
 new ssh2.Server({
   hostKeys: []
 }, function(client) {
@@ -35,3 +37,7 @@ new ssh2.Server({
 }).listen(0, '127.0.0.1', function() {
   console.log('Listening on port ' + this.address().port);
 });
+}
+main()
+
+module.exports = main

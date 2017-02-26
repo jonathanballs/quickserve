@@ -16,7 +16,7 @@ app.listen(8000, function()
 
 
 //routes
-app.get("/s/*", function(req,res)
+app.all("/s/*", function(req,res)
 {
     //handle the creation of HTTP requests
     var method = req.method;
