@@ -1,5 +1,6 @@
 const express = require('express'),
-      app = express()
+      app = express(),
+      ssh = require('./ssh')
 
 //settings
 app.set('view engine', 'pug')
