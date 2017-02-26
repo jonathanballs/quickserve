@@ -12,8 +12,8 @@ extern crate router;
 
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::io;
 use std::path::Path;
+use std::option::Option;
 
 use thrussh::*;
 use thrussh::server::Response as sshResponse;
@@ -52,17 +52,42 @@ impl server::Handler for H {
         futures::finished((self, session))
     }
 
-    fn tcpip_forward(self, address: &str, port: u32, session: server::Session) -> Self::FutureBool
+    // When the SSH client requests a TCP/IP forward this method is called
+    fn tcpip_forward(self, address: &str, port: u32, mut session: server::Session) -> Self::FutureBool
     {
         println!("Client {} requested a port forward to {}", address, port);
+        let ch_id = session.channel_open_forwarded_tcpip(address, port, "localhost", port).unwrap();
+        println!("New TCP/IP forwarding session on channel {:?}", ch_id);
+        // Send a get request over the new channel
+        session.request_success();
+        session.data(ch_id, None, "GET / HTTP/1.1\r\n".as_bytes());
+        
+        // Return true that the tcpip forward request is accepted
         futures::finished((self, session, true))
+    }
+
+    fn channel_open_session(self, channel: ChannelId, session: server::Session) -> Self::FutureUnit
+    {
+        println!("New session {:?}", channel);
+        futures::finished((self, session))
+    }
+
+	fn channel_open_direct_tcpip(self, channel: ChannelId,
+		 host_to_connect: &str, port_to_connect: u32,
+		 originator_address: &str, originator_port: u32,
+		 session: server::Session) -> Self::FutureUnit
+    {
+        println!("Channel open direct tcpip: {} {} {} {}",host_to_connect,
+                 port_to_connect,originator_address,originator_port);
+
+        futures::finished((self, session))
     }
 }
 
-fn runSSHServer() {
+fn run_ssh_server() {
     env_logger::init().unwrap();
     // Starting the server thread.
-    let t = std::thread::spawn(|| {
+    std::thread::spawn(|| {
         let mut config = thrussh::server::Config::default();
 
         for (index, flag) in config.methods.enumerate() {
@@ -70,8 +95,6 @@ fn runSSHServer() {
                 config.methods.remove(flag);
             }
         }
-
-        println!("{:?}", config.methods);
 
         config.connection_timeout = Some(std::time::Duration::from_secs(600));
         config.auth_rejection_time = std::time::Duration::from_secs(3);
@@ -98,14 +121,18 @@ fn start_web()
     
     //Creating the server
     Iron::new(mount).http("localhost:8000").unwrap();
-    
 }
 
 fn main() {
-    //startWeb();
-    runSSHServer();
+    println!(
+        " _____       _      _                            \n\
+        |  _  |     (_)    | |                           \n\
+        | | | |_   _ _  ___| | _____  ___ _ ____   _____ \n\
+        | | | | | | | |/ __| |/ / __|/ _ \\ '__\\ \\ / / _ \\\n\
+        \\ \\/' / |_| | | (__|   <\\__ \\  __/ |   \\ V /  __/\n \
+         \\_/\\_\\\\__,_|_|\\___|_|\\_\\___/\\___|_|    \\_/ \\___|");
+
+    run_ssh_server();
     start_web();
-    let mut x = String::new();
-    io::stdin().read_line(&mut x);
 }
 
