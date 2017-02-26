@@ -24,10 +24,15 @@ app.get("/s/*", function(req,res)
     var path = path.substring(path.indexOf("/")+1, path.length)
     console.log(req)
 
-    res.send(method + " at " + slug + " in " + path + "<br/>Request: " + method + " /"+path + " HTTP/1.1")
+    res.send(method + " at " + slug + " in " + path + "<br/>Request: " + makeHTTP(method,path) )
 })
 
 app.get("/", function(req,res)
 {
     res.render('index')
 })
+
+function makeHTTP(method, path)
+{
+    return method + " /"+path + " HTTP/1.1"
+}
