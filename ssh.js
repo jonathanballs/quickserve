@@ -5,6 +5,8 @@ var inspect = require('util').inspect;
 var ssh2 = require('ssh2');
 var utils = ssh2.utils;
 
+var clientList = [];
+
 function makeid()
 {
     var text = "";
@@ -33,7 +35,10 @@ function main()
 		    console.log('Client is entering the shell');
 		    var stream = accept();
                     var id = makeid();
-                    stream.write("QuickServe: Your website can be found at http://quickserve.io/" + id);
+                    client.id = id;
+                    clientList.push(client)
+                    console.log(clientList[0].id)
+                    stream.write("QuickServe: Your website can be found at http://quickserve.io/s/" + id+"/");
                     client.id = id;
 		});
 	    });
@@ -49,11 +54,11 @@ function main()
 				'127.0.0.1', // Would normally come from a socket
 				45678, // Would normally come from a socket
 				function(err, stream) {
-                                    //client.stream = stream;
+                                    client.stream = stream;
 				    if (err)
 					return;
-                                    stream.on('data', function(data) {console.log(data.toString()); stream.end()});
-                                    stream.write("GET / HTTP/1.1\n\n");
+                                    // stream.on('data', function(data) {console.log(data.toString()); stream.end()});
+                                    // stream.write("GET / HTTP/1.1\n\n");
 				});
 		    }, 1000);
 		} else {
@@ -69,5 +74,5 @@ function main()
 };
 main()
 
-module.exports = main
+module.exports = {main,clientList}
 
