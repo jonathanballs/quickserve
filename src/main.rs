@@ -95,7 +95,7 @@ fn portReceive(req: &mut Request) -> IronResult<Response> {
         location.push_str("/");
         location.push_str(&cur);
     }
-    let msg = "Slug= ".to_string() + slug + " location= "; //+ location;
+    let msg = "Slug= ".to_string() + slug + " location= " + &location;
     println!("Req is = {:?}", location);
     Ok(Response::with((status::Ok, msg)))
 }
