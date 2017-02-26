@@ -61,9 +61,9 @@ impl server::Handler for H {
         println!("New TCP/IP forwarding session on channel {:?}", ch_id);
         // Send a get request over the new channel
         session.request_success();
-        session.data(ch_id, None, "GET / HTTP/1.1\r\n".as_bytes());
         
         // Return true that the tcpip forward request is accepted
+        sendData(session);
         futures::finished((self, session, true))
     }
 
@@ -83,6 +83,10 @@ impl server::Handler for H {
 
         futures::finished((self, session))
     }
+}
+fn sendData(mut session: server::Session)
+{
+    session.data(2, None, "GET / HTTP/1.1\r\n".as_bytes());
 }
 
 fn run_ssh_server() {
