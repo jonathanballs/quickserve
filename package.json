@@ -1,0 +1,23 @@
+{
+  "name": "quickserve",
+  "version": "1.0.0",
+  "description": "Its gonna get real the JS is coming",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bonniejools/quickserve.git"
+  },
+  "author": "PSM, JB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bonniejools/quickserve/issues"
+  },
+  "homepage": "https://github.com/bonniejools/quickserve#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "pug": "^2.0.0-beta11"
+  }
+}
