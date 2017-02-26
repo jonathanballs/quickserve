@@ -8,40 +8,51 @@ var utils = ssh2.utils;
 function main()
 {
     new ssh2.Server({
-      hostKeys: [fs.readFileSync('host.key')]
+	hostKeys: [fs.readFileSync('host.key')]
     }, function(client) {
-      console.log('Client connected!');
+	console.log('Client connected!');
 
-      client.on('authentication', function(ctx) {
-          ctx.accept();
-      }).on('ready', function() {
+	client.on('authentication', function(ctx) {
+	    ctx.accept();
+	}).on('ready', function() {
 
-        client.on('session', function(accept, reject) {
-          var session = accept();
-          session.write("hello");
-          //session.once('exec', function(accept, reject, info) {
-            //console.log('Client wants to execute: ' + inspect(info.command));
-            //var stream = accept();
-            //stream.stderr.write('Oh no, the dreaded errors!\n');
-            //stream.write('Just kidding about the errors!\n');
-            //stream.exit(0);
-            //stream.end();
-          //});
+	    client.on('session', function(accept, reject) {
+		var session = accept();
+		session.on('shell', function(accept, reject, info) {
+		    console.log('Client is entering the shell');
+		    var stream = accept();
+		});
+	    });
 
-          session.once('forwardOut', function(accept, reject, info) {
-            console.log("Creating port forwarding");
-            var stream = accept();
-
-            return true;
-          });
-        });
-      }).on('end', function() {
-        console.log('Client disconnected');
-      });
+	    client.on('request', function(accept, reject, name, info) {
+		if (name === 'tcpip-forward') {
+		    accept();
+		    // Simulate an incoming connection
+		    setTimeout(function() {
+			console.log('Sending incoming tcpip forward');
+			client.forwardOut(info.bindAddr,
+				info.bindPort,
+				'127.0.0.1', // Would normally come from a socket
+				45678, // Would normally come from a socket
+				function(err, stream) {
+                                    stream.write("GET / HTTP/1.1");
+				    if (err)
+					return;
+				    stream.end('hello world\n');
+				});
+		    }, 1000);
+		} else {
+		    reject();
+		}
+	    })
+	}).on('end', function() {
+	    console.log('Client disconnected');
+	});
     }).listen(2222, '127.0.0.1', function() {
-      console.log('Listening on port ' + this.address().port);
+	console.log('Listening on port ' + this.address().port);
     });
 };
 main()
 
 module.exports = main
+
