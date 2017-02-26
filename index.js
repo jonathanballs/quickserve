@@ -1,6 +1,5 @@
 const express = require('express'),
-      app = express(),
-      ssh = require('./ssh')
+      app = express()
 
 //settings
 app.set('view engine', 'pug')
@@ -9,20 +8,23 @@ app.use(express.static('static'))
 //opening port 8000 for http
 app.listen(8000, function()
 {
-    var greeting = "________        .__        __                                      \r\n\\_____  \\  __ __|__| ____ |  | __  ______ ______________  __ ____  \r\n \/  \/ \\  \\|  |  \\  |\/ ___\\|  |\/ \/ \/  ___\/\/ __ \\_  __ \\  \\\/ \/\/ __ \\ \r\n\/   \\_\/.  \\  |  \/  \\  \\___|    <  \\___ \\\\  ___\/|  | \\\/\\   \/\\  ___\/ \r\n\\_____\\ \\_\/____\/|__|\\___  >__|_ \\\/____  >\\___  >__|    \\_\/  \\___  >\r\n       \\__>             \\\/     \\\/     \\\/     \\\/                 \\\/ ";
+    var greeting = " ________        .__        __                                      \r\n\\_____  \\  __ __|__| ____ |  | __  ______ ______________  __ ____  \r\n \/  \/ \\  \\|  |  \\  |\/ ___\\|  |\/ \/ \/  ___\/\/ __ \\_  __ \\  \\\/ \/\/ __ \\ \r\n\/   \\_\/.  \\  |  \/  \\  \\___|    <  \\___ \\\\  ___\/|  | \\\/\\   \/\\  ___\/ \r\n\\_____\\ \\_\/____\/|__|\\___  >__|_ \\\/____  >\\___  >__|    \\_\/  \\___  >\r\n       \\__>             \\\/     \\\/     \\\/     \\\/                 \\\/ "
     console.log(greeting)
     console.log("Listening on port 8000")
 })
 
 
 //routes
-app.all("/s/*", function(req,res)
+app.get("/s/*", function(req,res)
 {
     //handle the creation of HTTP requests
     var method = req.method;
     var path = req.url.substring(3, req.url.length)
+    var slug = path.substring(0, path.indexOf("/"))
+    var path = path.substring(path.indexOf("/")+1, path.length)
+    console.log(req)
 
-    res.send(method + " " + path)
+    res.send(method + " at " + slug + " in " + path + "<br/>Request: " + method + " /"+path + " HTTP/1.1")
 })
 
 app.get("/", function(req,res)
