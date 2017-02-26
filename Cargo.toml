@@ -13,4 +13,5 @@ rustc-serialize = "0.3"
 mount = "0.3"
 staticfile = "*"
 router = "0.5"
+params = "0.6.0"
 
