@@ -1,10 +1,10 @@
-static mut counter:i32 = 0;
+static mut COUNTER:i32 = 0;
 fn main()
 {
     add();
     unsafe
     {
-        println!("{:?}",counter);
+        println!("{:?}",COUNTER);
     }
 }
 
@@ -12,6 +12,6 @@ fn add()
 {
     unsafe
     {
-    counter = counter + 1;
+    COUNTER = COUNTER + 1;
     }
 }
