@@ -41,5 +41,7 @@ function main()
     }).listen(2222, '127.0.0.1', function() {
       console.log('Listening on port ' + this.address().port);
     });
-}
-main();
+};
+main()
+
+module.exports = main
