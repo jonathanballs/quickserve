@@ -84,6 +84,7 @@ fn runSSHServer() {
     });
 }
 fn portReceive(req: &mut Request) -> IronResult<Response> {
+    println!("{:?}",req.method);
     let url = req.url.path();
     let ref slug = url[0]; 
     let mut location = std::string::String::new();
@@ -104,8 +105,9 @@ fn start_web()
 {
     //Creating the router
     let mut router = Router::new();
-    // router.get(":slug/:location",portReceive,  "hello");
     router.get("*",portReceive,  "hello");
+    router.post("*",portReceive,  "hello");
+    router.put("*",portReceive,  "hello");
 
     let mut mount = Mount::new();
     mount.mount("/s/", router)
