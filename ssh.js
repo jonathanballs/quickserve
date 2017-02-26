@@ -34,6 +34,7 @@ function main()
 		    var stream = accept();
                     var id = makeid();
                     stream.write("QuickServe: Your website can be found at http://quickserve.io/" + id);
+                    client.id = id;
 		});
 	    });
 
@@ -48,10 +49,11 @@ function main()
 				'127.0.0.1', // Would normally come from a socket
 				45678, // Would normally come from a socket
 				function(err, stream) {
-                                    stream.write("GET / HTTP/1.1");
-                                    stream.on('data', function(data) {console.log(data)});
+                                    //client.stream = stream;
 				    if (err)
 					return;
+                                    stream.on('data', function(data) {console.log(data.toString()); stream.end()});
+                                    stream.write("GET / HTTP/1.1\n\n");
 				});
 		    }, 1000);
 		} else {
