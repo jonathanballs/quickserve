@@ -52,7 +52,6 @@ function main()
                                     stream.on('data', function(data) {console.log(data)});
 				    if (err)
 					return;
-				    stream.end('hello world\n');
 				});
 		    }, 1000);
 		} else {
